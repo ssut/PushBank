@@ -57,7 +57,7 @@ class Cache(Singleton):
     def get(self, key):
         return (self._cache[key] if self.exists(key) else None)
 
-    def set(self, *args):
+    def set(self, **args):
         if len(args) == 1 and isinstance(args[0], dict):
             for key, value in args[0].iteritems():
                 self.set(key, value)
