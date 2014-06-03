@@ -18,7 +18,9 @@ def create_default_config(fn):
         'SMTP_PORT': 587,
         'SMTP_USER': '',
         'SMTP_PASSWORD': '',
+        'SMTP_TLS': True,
         'TARGET': '',
+        'TITLE': u'{bank_name} 예금액 변동 알림',
     }
 
     BANK = {
