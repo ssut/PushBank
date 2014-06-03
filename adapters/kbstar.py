@@ -5,7 +5,8 @@ import json
 from bs4 import BeautifulSoup
 import urllib, urllib2
 
-name = 'kbstar'
+en_name = 'kbstar'
+name = u'국민은행'
 def query(account, password, resident, username):
     """
     국민은행 계좌 잔액 빠른조회. 빠른조회 서비스에 등록이 되어있어야 사용 가능.
