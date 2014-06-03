@@ -34,7 +34,7 @@ class Cache(Singleton):
     def _reload(self):
         if os.path.isfile(self.cache_file):
             with open(self.cache_file, 'r') as f:
-                try: self._cache = pickle.loads(f)
+                try: self._cache = pickle.loads(f.read())
                 except:
                     self._cache = {}
         else:
@@ -48,7 +48,8 @@ class Cache(Singleton):
 
         with open(self.cache_file, 'w') as f:
             try:
-                f.write(pickle.dumps(self._cache))
+                dump = pickle.dumps(self._cache)
+                f.write(dump)
                 return True
             except:
                 logging.warning('Cache save failed')
@@ -57,7 +58,7 @@ class Cache(Singleton):
     def get(self, key):
         return (self._cache[key] if self.exists(key) else None)
 
-    def set(self, **args):
+    def set(self, *args):
         if len(args) == 1 and isinstance(args[0], dict):
             for key, value in args[0].iteritems():
                 self.set(key, value)
