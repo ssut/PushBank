@@ -85,6 +85,7 @@ class PushBank(object):
                     sys.exit(1)
 
     def handle_adapter(self, adapter, **kwargs):
+        current_thread().name = adapter.en_name.upper()
         result = adapter.query(**kwargs)
         result['history'].reverse()
 
@@ -127,6 +128,8 @@ class PushBank(object):
                     'adapter': adapter,
                     'data': data,
                 })
+        elif balance > 0:
+            pass
         else:
             # else save the balance and histories now
             history = []
@@ -138,7 +141,8 @@ class PushBank(object):
             # save to cache store
             self.cache.set(balance_key, latest_balance)
             self.cache.set(history_key, history)
-
+            logging.info('Stored your bank account data such as' + \
+                ' balance and history. Waiting for save data to disk..')
 
     def handle_bank(self):
         while True:
@@ -154,7 +158,8 @@ class PushBank(object):
                 del thread
             del bank_threads
 
-            sleep(5)
+            # check every 15 seconds
+            sleep(15)
 
     def handle_email(self):
         while True:
@@ -168,7 +173,7 @@ class PushBank(object):
                     bank_en_name=adapter.en_name)
                 content = self.template.render(**history)
                 send_mail(target=self.config.EMAIL['TARGET'], title=mail_title,
-                    content=content)
+                    content=content, adapter_name=adapter.en_name)
             except queue.Empty:
                 # sleep zero for yield
                 sleep(0)
