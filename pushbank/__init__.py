@@ -87,6 +87,9 @@ class PushBank(object):
     def handle_adapter(self, adapter, **kwargs):
         current_thread().name = adapter.en_name.upper()
         result = adapter.query(**kwargs)
+        if not 'history' in result:
+            logging.warning('Missing history in query result')
+            return
         result['history'].reverse()
 
         # generate balance, history cache key
