@@ -15,6 +15,7 @@ class Cache(Singleton):
         self.tmp_path = tmp_path
         self.cache_file = os.path.join(tmp_path, 'cache.db')
         self._cache = {}
+        self._modified = False
         self._backup_handler = Greenlet.spawn(self._backup_handler)
 
         self._reload()
@@ -23,13 +24,15 @@ class Cache(Singleton):
     def _backup_handler(self):
         current_thread().name = 'BACKUP'
         while True:
-            logging.info('Background saving started by backup_handler')
-            start = time.clock()
-            result = self._save()
-            if result is True:
-                elapsed = (time.clock() - start) * 1000
-                logging.info('Cache saved on disk: %.3f seconds', elapsed)
-            sleep(30)
+            if self._modified:
+                logging.info('Background saving started by backup_handler')
+                start = time.clock()
+                result = self._save()
+                if result is True:
+                    elapsed = (time.clock() - start) * 1000
+                    logging.info('Cache saved on disk: %.3f seconds', elapsed)
+            else:
+                sleep(5)
 
     def _reload(self):
         if os.path.isfile(self.cache_file):
@@ -50,6 +53,7 @@ class Cache(Singleton):
             try:
                 dump = pickle.dumps(self._cache)
                 f.write(dump)
+                self._modified = False
                 return True
             except:
                 logging.warning('Cache save failed')
@@ -64,6 +68,7 @@ class Cache(Singleton):
                 self.set(key, value)
         elif len(args) == 2:
             self._cache[args[0]] = args[1]
+            self._modified = True
 
     def exists(self, key):
         return (True if key in self._cache else False)
