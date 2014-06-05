@@ -9,8 +9,10 @@ from gevent import monkey; monkey.patch_all()
 from gevent import sleep
 
 session = None
+connect_params = {}
 def connect(server='smtp.gmail.com', port=587, user='', password='', tls=False):
-    global session
+    params = locals()
+    global session, connect_params
     session = smtplib.SMTP(server, port)
     session.ehlo()
     if tls: session.starttls()
@@ -19,15 +21,30 @@ def connect(server='smtp.gmail.com', port=587, user='', password='', tls=False):
         # check smtp login status (235, 270 = accepted)
         if result[0] != 235 and result[0] != 270 and not 'Accept' in result[1]:
             raise Exception('SMTP verification failed')
+        # check smtp connection status
+        status = session.noop()[0]
+        if status != 250:
+            raise Exception('SMTP connection closed')
     except:
         logging.error('SMTP login failed')
         sys.exit(1)
     else:
+        connect_params = params
         logging.info('SMTP login success')
         return True
 
-def send(target, title, content, adapter_name):
+def test_session():
     global session
+    try:
+        status = session.noop()[0]
+    except: # smtplib.SMTPServerDisconnected
+        status = -1
+    return True if status == 250 else False
+
+def send(target, title, content, adapter_name):
+    global session, connect_params
+    if not test_session():
+        connect(**connect_params)
     corpo = MIMEText(content.encode('utf-8'), 'html', 'utf-8')
     corpo['From'] = target
     corpo['To'] = target
