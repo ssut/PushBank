@@ -29,8 +29,18 @@ def create_default_config(fn):
             'password': '',
             'resident': '',
             'username': '',
+        },
+        'hana': {
+            'account': '',
+            'password': '',
+            'resident': '',
         }
     }
+
+    INCLUDE_BANKS = (
+        'kbstar',
+        'hana',
+    )
     """)
     f.close()
 
