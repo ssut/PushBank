@@ -33,6 +33,6 @@ def send(target, title, content, adapter_name):
     corpo['To'] = target
     corpo['Subject'] = Header(title, 'utf-8')
     session.sendmail(target, [target], corpo.as_string())
-    logging.info('Sent an email by ', adapter_name)
+    logging.info('Sent an email by %s', adapter_name)
     # delay
     sleep(1)
