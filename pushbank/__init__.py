@@ -124,6 +124,7 @@ class PushBank(object):
                     if len(history) > latest_history_size:
                         history.pop(0)
             # save new history
+            self.cache.set(balance_key, latest_balance)
             self.cache.set(history_key, history)
             # add email queue from diffs
             for data in diffs:
@@ -132,7 +133,7 @@ class PushBank(object):
                     'data': data,
                 })
         elif balance > 0:
-            pass
+            logging.info('%s - No balance changes', adapter.en_name)
         else:
             # else save the balance and histories now
             history = []
