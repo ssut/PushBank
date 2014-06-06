@@ -87,7 +87,11 @@ class PushBank(object):
 
     def handle_adapter(self, adapter, **kwargs):
         current_thread().name = adapter.en_name.upper()
-        result = adapter.query(**kwargs)
+        try:
+            result = adapter.query(**kwargs)
+        except:
+            logging.warning('%s - Failed to fetch data', adapter.en_name)
+            return
         if not 'history' in result:
             logging.warning('Missing history in query result')
             return
@@ -164,8 +168,7 @@ class PushBank(object):
                 del thread
             del bank_threads
 
-            # check every 15 seconds
-            sleep(15)
+            sleep(self.config.REFRESH_INTERVAL)
 
     def handle_email(self):
         while True:

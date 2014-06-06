@@ -41,6 +41,9 @@ def create_default_config(fn):
         'kbstar',
         'hana',
     )
+
+    # seconds
+    REFRESH_INTERVAL = 15
     """)
     f.close()
 
