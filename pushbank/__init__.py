@@ -1,4 +1,4 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import imp
 import logging
 import os
@@ -8,7 +8,8 @@ import time
 import traceback
 import gevent
 
-from gevent import monkey; monkey.patch_all()
+from gevent import monkey
+monkey.patch_all()
 from gevent import Greenlet
 from gevent import queue
 from gevent import sleep
@@ -20,7 +21,10 @@ from .mail import connect as connect_mail
 from .mail import send as send_mail
 
 home = os.getcwd()
+
+
 class PushBank(object):
+
     def __init__(self, config):
         self.config = config
         self.emails = queue.Queue()
@@ -33,8 +37,9 @@ class PushBank(object):
         current_thread().name = 'MAIN'
         root_logger = logging.getLogger()
         root_logger.level = config.log_level
-        log_formatter = logging.Formatter('%(asctime)s [%(threadName)-8.8s]' + \
-                                        ' [%(levelname)-5.5s]  %(message)s')
+        log_formatter = logging.Formatter(
+            "%(asctime)s [%(threadName)-8.8s]"
+            " [%(levelname)-5.5s]  %(message)s")
         file_handler = logging.FileHandler('tmp/stdout.log')
         file_handler.setFormatter(log_formatter)
         root_logger.addHandler(file_handler)
@@ -47,10 +52,10 @@ class PushBank(object):
 
         # connect smtp server
         self.connected = connect_mail(server=config.EMAIL['SMTP_SERVER'],
-                            port=config.EMAIL['SMTP_PORT'],
-                            user=config.EMAIL['SMTP_USER'],
-                            password=config.EMAIL['SMTP_PASSWORD'],
-                            tls=config.EMAIL['SMTP_TLS'])
+                                      port=config.EMAIL['SMTP_PORT'],
+                                      user=config.EMAIL['SMTP_USER'],
+                                      passwd=config.EMAIL['SMTP_PASSWORD'],
+                                      tls=config.EMAIL['SMTP_TLS'])
 
     @staticmethod
     def execute(config):
@@ -77,7 +82,7 @@ class PushBank(object):
         for fn in os.listdir(os.path.join(home, 'adapters')):
             name = os.path.basename(fn)[:-3]
             if fn.endswith('.py') and not fn.startswith('_'):
-                if not name in self.config.INCLUDE_BANKS:
+                if name not in self.config.INCLUDE_BANKS:
                     continue
                 fn = os.path.join(home, 'adapters', fn)
                 try:
@@ -94,7 +99,7 @@ class PushBank(object):
         except:
             logging.warning('%s - Failed to fetch data', adapter.en_name)
             return
-        if not 'history' in result:
+        if 'history' not in result:
             logging.warning('Missing history in query result')
             return
         result['history'].reverse()
@@ -109,7 +114,7 @@ class PushBank(object):
 
         # get balance from cache
         balance = self.cache.get(balance_key) if self.cache.exists(balance_key) \
-                 else 0
+            else 0
 
         # if balance is already cached and different from the latest balance
         if balance > 0 and balance != latest_balance:
@@ -124,7 +129,7 @@ class PushBank(object):
                 # serialize history element (for check of duplicate)
                 serialized = pickle.dumps(h)
                 # check exists of history in cached histories
-                if not serialized in history:
+                if serialized not in history:
                     diffs.append(h)
                     history.append(serialized)
                     # remove first element if greather than latest history size
@@ -152,14 +157,14 @@ class PushBank(object):
             # save to cache store
             self.cache.set(balance_key, latest_balance)
             self.cache.set(history_key, history)
-            logging.info('Stored your bank account data such as' + \
-                ' balance and history. Waiting for save data to disk..')
+            logging.info("Stored your bank account data such as"
+                         " balance and history. Waiting for save data to disk")
 
     def handle_bank(self):
         while True:
             bank_threads = []
             for name, kwargs in self.config.BANK.iteritems():
-                if not name in self.config.INCLUDE_BANKS:
+                if name not in self.config.INCLUDE_BANKS:
                     continue
                 adapter = self.adapters[name]
                 thread = Greenlet.spawn(self.handle_adapter, adapter, **kwargs)
@@ -185,7 +190,7 @@ class PushBank(object):
                     bank_en_name=adapter.en_name)
                 content = self.template.render(**history)
                 send_mail(target=self.config.EMAIL['TARGET'], title=mail_title,
-                    content=content, adapter_name=adapter.en_name)
+                          content=content, adapter_name=adapter.en_name)
             except queue.Empty:
                 # sleep zero for yield
                 sleep(0)

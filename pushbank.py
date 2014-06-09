@@ -53,10 +53,11 @@ def main():
     tmp_dir = os.path.join('.', 'tmp')
     if not os.path.isfile(config_file):
         create_default_config(config_file)
-        print >> sys.stdout, 'Created config file. Edit config.py and run pb again'
+        print >> sys.stdout, \
+            'Created config file. Edit config.py and run pb again'
         sys.exit(0)
     if not os.path.isdir(tmp_dir):
-      os.mkdir(tmp_dir, 0777)
+        os.mkdir(tmp_dir, 0777)
 
     try:
         import config
@@ -67,7 +68,8 @@ def main():
     import optparse
     optp = optparse.OptionParser()
     optp.add_option('-v', '--verbose', dest='verbose', action='count',
-                    help="Increase verbosity (specify multiple times for more)")
+                    help="Increase verbosity"
+                    "(specify multiple times for more)")
     opts, args = optp.parse_args()
 
     log_level = logging.WARNING

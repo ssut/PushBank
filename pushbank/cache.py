@@ -3,14 +3,17 @@ import os
 import pickle
 import time
 
-from gevent import monkey; monkey.patch_all()
+from gevent import monkey
+monkey.patch_all()
 from gevent import sleep
 from gevent import Greenlet
 from threading import current_thread
 
 from ._singleton import Singleton
 
+
 class Cache(Singleton):
+
     def __init__(self, tmp_path):
         self.tmp_path = tmp_path
         self.cache_file = os.path.join(tmp_path, 'cache.db')
@@ -47,7 +50,7 @@ class Cache(Singleton):
     def _save(self):
         # waiting for write access permission to destination file
         while os.path.isfile(self.cache_file) and \
-            not os.access(self.cache_file, os.W_OK):
+                not os.access(self.cache_file, os.W_OK):
             sleep(0.1)
 
         with open(self.cache_file, 'w') as f:

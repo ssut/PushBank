@@ -1,25 +1,29 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import logging
 import smtplib
 import sys
 
 from email.mime.text import MIMEText
 from email.header import Header
-from gevent import monkey; monkey.patch_all()
+from gevent import monkey
+monkey.patch_all()
 from gevent import sleep
 
 session = None
 connect_params = {}
-def connect(server='smtp.gmail.com', port=587, user='', password='', tls=False):
+
+
+def connect(server='smtp.gmail.com', port=587, user='', passwd='', tls=False):
     params = locals()
     global session, connect_params
     session = smtplib.SMTP(server, port)
     session.ehlo()
-    if tls: session.starttls()
+    if tls:
+        session.starttls()
     try:
-        result = session.login(user, password)
+        result = session.login(user, passwd)
         # check smtp login status (235, 270 = accepted)
-        if result[0] != 235 and result[0] != 270 and not 'Accept' in result[1]:
+        if result[0] != 235 and result[0] != 270 and 'Accept' not in result[1]:
             raise Exception('SMTP verification failed')
         # check smtp connection status
         status = session.noop()[0]
@@ -33,13 +37,15 @@ def connect(server='smtp.gmail.com', port=587, user='', password='', tls=False):
         logging.info('SMTP login success')
         return True
 
+
 def test_session():
     global session
     try:
         status = session.noop()[0]
-    except: # smtplib.SMTPServerDisconnected
+    except:  # smtplib.SMTPServerDisconnected
         status = -1
     return True if status == 250 else False
+
 
 def send(target, title, content, adapter_name):
     global session, connect_params

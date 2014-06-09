@@ -1,16 +1,18 @@
-#-*- coding: utf-8 -*-
-from datetime import datetime, timedelta
+# -*- coding: utf-8 -*-
 import json
+import urllib
+import urllib2
 
 from bs4 import BeautifulSoup
-import urllib, urllib2
+from datetime import datetime, timedelta
 
 en_name = 'hana'
 name = u'하나은행'
 def query(account, password, resident):
     """
     하나은행 계좌 잔액 빠른조회. 빠른조회 서비스에 등록이 되어있어야 사용 가능.
-    빠른조회 서비스: https://open.hanabank.com/flex/quick/quickService.do?subMenu=1&Ctype=B&cid=OpenB_main_Left&oid=quickservice
+    빠른조회 서비스:
+    https://open.hanabank.com/flex/quick/quickService.do?oid=quickservice
 
     account  -- 계좌번호 ('-' 제외)
     password -- 계좌 비밀번호 (숫자 4자리)
@@ -60,7 +62,8 @@ def query(account, password, resident):
     if success:
         data = data.replace('&nbsp;', '')
         data = BeautifulSoup(data)
-        balance = data.select('table.tbl_col01 tr:nth-of-type(2) td')[0].text.strip()
+        balance = data.select('table.tbl_col01' +
+                              ' tr:nth-of-type(2) td')[0].text.strip()
         balance = int(balance.replace(',', ''))
         history = [
             [y.text.strip() for y in x.select('td')]
@@ -75,7 +78,7 @@ def query(account, password, resident):
         d['balance'] = balance
         d['history'] = [{
             'date': datetime.strptime('{0},{1}'.format(x[0], x[6]),
-                '%Y-%m-%d,%H:%M').date(),
+                                      '%Y-%m-%d,%H:%M').date(),
             'type': x[1],
             'depositor': x[2],
             'withdraw': int(x[3].replace(',', '') if x[3] else '0'),
@@ -85,4 +88,3 @@ def query(account, password, resident):
         } for x in history]
 
     return d
-

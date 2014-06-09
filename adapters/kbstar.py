@@ -1,9 +1,10 @@
-#-*- coding: utf-8 -*-
-from datetime import datetime, timedelta
+# -*- coding: utf-8 -*-
 import json
+import urllib
+import urllib2
 
 from bs4 import BeautifulSoup
-import urllib, urllib2
+from datetime import datetime, timedelta
 
 en_name = 'kbstar'
 name = u'국민은행'
@@ -59,11 +60,13 @@ def query(account, password, resident, username):
     if success:
         data = data.replace('&nbsp;', '')
         data = BeautifulSoup(data)
-        balance = data.select('table table:nth-of-type(1) tr:nth-of-type(3) td')[-1].text
+        balance = data.select('table table:nth-of-type(1)' +
+                              ' tr:nth-of-type(3) td')[-1].text
         balance = int(balance.replace(',', ''))
         history = [
             [y.text.strip() for y in x.select('td')]
-            for x in data.select('table table:nth-of-type(2) tr[align="center"]')
+            for x in
+            data.select('table table:nth-of-type(2) tr[align="center"]')
         ]
 
         '''
@@ -83,4 +86,3 @@ def query(account, password, resident, username):
         } for x in history]
 
     return d
-
