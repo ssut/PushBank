@@ -37,7 +37,8 @@ class Cache(Singleton):
     def _reload(self):
         if os.path.isfile(self.cache_file):
             with open(self.cache_file, 'r') as f:
-                try: self._cache = pickle.loads(f.read())
+                try:
+                    self._cache = pickle.loads(f.read())
                 except:
                     self._cache = {}
         else:

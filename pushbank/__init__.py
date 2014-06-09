@@ -77,9 +77,11 @@ class PushBank(object):
         for fn in os.listdir(os.path.join(home, 'adapters')):
             name = os.path.basename(fn)[:-3]
             if fn.endswith('.py') and not fn.startswith('_'):
-                if not name in self.config.INCLUDE_BANKS: continue
+                if not name in self.config.INCLUDE_BANKS:
+                    continue
                 fn = os.path.join(home, 'adapters', fn)
-                try: self.adapters[name] = imp.load_source(name, fn)
+                try:
+                    self.adapters[name] = imp.load_source(name, fn)
                 except Exception, e:
                     traceback.print_exc()
                     print >> sys.stderr, "Error loading %s: %s" % (name, e)
@@ -157,7 +159,8 @@ class PushBank(object):
         while True:
             bank_threads = []
             for name, kwargs in self.config.BANK.iteritems():
-                if not name in self.config.INCLUDE_BANKS: continue
+                if not name in self.config.INCLUDE_BANKS:
+                    continue
                 adapter = self.adapters[name]
                 thread = Greenlet.spawn(self.handle_adapter, adapter, **kwargs)
                 thread.start()
