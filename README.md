@@ -19,6 +19,8 @@ PLEASE check below before creating an issue.
 * KB Star Bank: [https://obank.kbstar.com/quics?page=C018920](https://obank.kbstar.com/quics?page=C018920)
 * Hana bank: [https://open.hanabank.com/flex/quick/quickService.do?subMenu=1&Ctype=B&cid=OpenB_main_Left&oid=quickservice](https://open.hanabank.com/flex/quick/quickService.do?subMenu=1&Ctype=B&cid=OpenB_main_Left&oid=quickservice)
 
+...and that welcomes you in with pretty nasty browser plugins.
+
 ### 2) Mail settings
 * Open the `config.py` and edit `EMAIL` settings.
 * I recommend you to use GMail as your SMTP server.
