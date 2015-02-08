@@ -46,7 +46,7 @@ def query(account, password, resident):
     try:
         data = urllib.urlencode(params)
         req = urllib2.Request(url, data)
-        response = urllib2.urlopen(req)
+        response = urllib2.urlopen(req, timeout=10)
         data = response.read()
         data = data.decode('euc-kr').encode('utf-8')
         success = True
