@@ -1,9 +1,9 @@
 # PushBank
-Send a push notification using e-mail when a change occurs in the balance of your bank account.
+Send a push notification using smtp server when your bank balance has been changed.
+
+The goal of PushBank is to be drop-in replacement for SMS and save on the SMS fee that BANK charges you.
 
 ## How to use PushBank
-**NOTICE**: At the moment PushBank supports(tested) only python 2.7. Sadly pypy is not supported yet.
-
 1. Clone this repository: `git clone https://github.com/ssut/PushBank`
 2. Install dependency packages using pip: `pip -r requirements.pip`
 3. Run following command: `./pushbank.py`
@@ -11,22 +11,21 @@ Send a push notification using e-mail when a change occurs in the balance of you
 5. Run pushbank again!
 
 ## Troubleshooting
+Please copy the output without your private info when you create an issue.
+
 PLEASE check below before creating an issue.
 
-If you create an issue, please copy the output without private information.
-
-### 1) Check your bank account is registered to "Fast inquiry service"
+### 1) You may have to register for "Fast Inquiry Service"
 * KB Star Bank: [https://obank.kbstar.com/quics?page=C018920](https://obank.kbstar.com/quics?page=C018920)
 * Hana bank: [https://open.hanabank.com/flex/quick/quickService.do?subMenu=1&Ctype=B&cid=OpenB_main_Left&oid=quickservice](https://open.hanabank.com/flex/quick/quickService.do?subMenu=1&Ctype=B&cid=OpenB_main_Left&oid=quickservice)
 
-### 2) Check your SMTP settings
-* Default SMTP server is GMail(smtp.gmail.com).
+### 2) Mail settings
+* Open the `config.py` and edit `EMAIL` settings.
+* I recommend you to use GMail as your SMTP server.
 
 ## Support
 
-The developer reside in [Ozinger IRC](http://ozinger.com), [Freenode IRC](http://freenode.net) and would be glad to help you. (IRC nickname is `ssut`)
-
-If you think you have a found a bug/have a idea/suggestion, please **open a issue** here on Github.
+If you think you have a found a bug/have a idea/suggestion, please **open an issue** here on Github.
 
 ## License
 PushBank is **licensed** under the **MIT** license. The terms are as follows.
