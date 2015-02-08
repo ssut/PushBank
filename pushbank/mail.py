@@ -2,12 +2,11 @@
 import logging
 import smtplib
 import sys
+import eventlet
+eventlet.monkey_patch()
 
 from email.mime.text import MIMEText
 from email.header import Header
-from gevent import monkey
-monkey.patch_all()
-from gevent import sleep
 
 session = None
 connect_params = {}

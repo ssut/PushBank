@@ -2,11 +2,9 @@ import logging
 import os
 import pickle
 import time
+import eventlet
+eventlet.monkey_patch()
 
-from gevent import monkey
-monkey.patch_all()
-from gevent import sleep
-from gevent import Greenlet
 from threading import current_thread
 
 from ._singleton import Singleton
@@ -19,10 +17,9 @@ class Cache(Singleton):
         self.cache_file = os.path.join(tmp_path, 'cache.db')
         self._cache = {}
         self._modified = False
-        self._backup_handler = Greenlet.spawn(self._backup_handler)
+        self._backup_handler = eventlet.spawn(self._backup_handler)
 
         self._reload()
-        self._backup_handler.start()
 
     def _backup_handler(self):
         current_thread().name = 'BACKUP'
@@ -35,7 +32,7 @@ class Cache(Singleton):
                     elapsed = (time.clock() - start) * 1000
                     logging.info('Cache saved on disk: %.3f seconds', elapsed)
             else:
-                sleep(5)
+                eventlet.sleep(5)
 
     def _reload(self):
         if os.path.isfile(self.cache_file):
@@ -51,7 +48,7 @@ class Cache(Singleton):
         # waiting for write access permission to destination file
         while os.path.isfile(self.cache_file) and \
                 not os.access(self.cache_file, os.W_OK):
-            sleep(0.1)
+            eventlet.sleep(0.1)
 
         with open(self.cache_file, 'w') as f:
             try:
