@@ -81,7 +81,7 @@ def main():
     config.log_level = log_level
 
     from pushbank import PushBank
-    PushBank.execute(config)
+    return PushBank.execute(config)
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

@@ -75,8 +75,10 @@ class PushBank(object):
         try:
             joinall([email_process, bank_process])
         except KeyboardInterrupt:
-            print >> sys.stdout, 'PushBank has stopped working.'
-            sys.exit(0)
+            logging.info('Pushbank has stopped working.')
+            return 0
+
+        return 1
 
     def load_adapter(self):
         banks = self.config.BANK.keys()
@@ -88,9 +90,9 @@ class PushBank(object):
                 fn = os.path.join(home, 'adapters', fn)
                 try:
                     self.adapters[name] = imp.load_source(name, fn)
-                except Exception, e:
+                except Exception as e:
                     traceback.print_exc()
-                    print >> sys.stderr, "Error loading %s: %s." % (name, e)
+                    logging.error('Error loading %s: %s', name, e)
                     sys.exit(1)
 
     def handle_adapter(self, adapter, **kwargs):
